@@ -16,8 +16,8 @@ import com.nixsolutions.ponarin.entity.Role;
 import com.nixsolutions.ponarin.entity.User;
 
 public class RestUserServiceTest {
-    private static final String BASE_URL = "http://10.10.34.83:8080/RestProject/users/";
-    private static final String ID_URL = "http://10.10.34.83:8080/RestProject/users/{id}";
+    private static final String BASE_URL = "http://10.10.34.83:8080/WebServiceProject/users/";
+    private static final String ID_URL = "http://10.10.34.83:8080/WebServiceProject/users/{id}";
 
     private RestTemplate restTemplate;
     private User testUser;
