@@ -5,6 +5,8 @@
 	xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:mvc="http://www.springframework.org/schema/mvc" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ws="http://jax-ws.dev.java.net/spring/core"
+	xmlns:wss="http://jax-ws.dev.java.net/spring/servlet"
 
 	xsi:schemaLocation="
         http://www.springframework.org/schema/beans     
@@ -14,7 +16,11 @@
         http://www.springframework.org/schema/mvc
         http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
         http://www.springframework.org/schema/tx
-        http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
+        http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+        http://jax-ws.dev.java.net/spring/core 
+        http://jax-ws.java.net/spring/core.xsd
+        http://jax-ws.dev.java.net/spring/servlet 
+        http://jax-ws.java.net/spring/servlet.xsd">
 
 	<mvc:annotation-driven />
 	<tx:annotation-driven transaction-manager="transactionManager" />
@@ -55,4 +61,11 @@
 		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
+	
+	<bean id="soapUserService" class="com.nixsolutions.ponarin.web_service.soap.impl.SoapUserServiceImpl"/>
+	<wss:binding url="/soap_user_service">
+	    <wss:service>
+	        <ws:service bean="#soapUserService"/>
+	    </wss:service>
+	</wss:binding>
 </beans>

@@ -1,32 +1,34 @@
 package com.nixsolutions.ponarin.web_service.soap;
 
-import java.util.Date;
+import java.util.List;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 
-import com.nixsolutions.ponarin.entity.Role;
 import com.nixsolutions.ponarin.entity.User;
 
 @WebService
-public class SoapUserService {
-    
+public interface SoapUserService {
+
     @WebMethod
-    public User getUser() {
-        User user = new User();
+    void create(User user);
 
-        user.setLogin("testLogin");
-        user.setPassword("Q!q1q1");
-        user.setEmail("testEmail@mail.ru");
-        user.setFirstName("First Name");
-        user.setLastName("Last Name");
-        user.setBirthDay(new Date());
+    @WebMethod
+    void update(User user);
 
-        Role role = new Role();
-        role.setId(1);
-        role.setName("Admin");
-        user.setRole(role);
-        
-        return user;
-    }
+    @WebMethod
+    void remove(User user);
+
+    @WebMethod
+    List<User> findAll();
+
+    @WebMethod
+    User findById(long id);
+
+    @WebMethod
+    User findByLogin(String login);
+
+    @WebMethod
+    User findByEmail(String email);
+
 }
