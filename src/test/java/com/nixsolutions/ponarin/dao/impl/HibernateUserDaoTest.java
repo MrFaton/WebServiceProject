@@ -181,8 +181,6 @@ public class HibernateUserDaoTest {
 
         List<User> actual = userDao.findAll();
 
-        System.out.println(actual);
-
         Assert.assertEquals("User lists must equals", expected, actual);
     }
 
