@@ -19,19 +19,16 @@ public class SoapUserServiceImpl implements SoapUserService {
     @Override
     public void create(User user) {
         userDao.create(user);
-
     }
 
     @Override
     public void update(User user) {
         userDao.update(user);
-
     }
 
     @Override
     public void remove(User user) {
         userDao.remove(user);
-
     }
 
     @Override

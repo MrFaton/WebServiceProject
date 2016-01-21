@@ -18,6 +18,9 @@ import com.nixsolutions.ponarin.entity.User;
 public class RestUserServiceTest {
     private static final String BASE_URL = "http://10.10.34.83:8080/WebServiceProject/users/";
     private static final String ID_URL = "http://10.10.34.83:8080/WebServiceProject/users/{id}";
+    private static final String NON_EXISTS_LOGIN = "nonExistsLogin";
+    private static final String NON_EXISTS_EMAIL = "non_exists_email@email.ua";
+    private static final long NON_EXISTS_ID = -1L;
 
     private RestTemplate restTemplate;
     private User testUser;
@@ -32,40 +35,46 @@ public class RestUserServiceTest {
 
     @After
     public void tearDown() {
-        deleteUser(testUser);
+        restTemplate.delete(ID_URL, testUser.getId());
     }
 
     @Test
     public void testCreate() {
-        deleteUser(testUser);
+        tearDown();
         User user = getDefaultUser();
+
+        testUser = user;
 
         ResponseEntity<User> responseEntity = restTemplate
                 .postForEntity(BASE_URL, user, User.class);
 
-        testUser = user;
         testUser.setId(getIdByLogin(user.getLogin()));
 
         assertEquals("Http status code must be " + HttpStatus.CREATED,
                 HttpStatus.CREATED, responseEntity.getStatusCode());
+
+        User actualUser = restTemplate.getForObject(ID_URL, User.class,
+                testUser.getId());
+
+        assertEquals("Users must equals", testUser, actualUser);
     }
 
     @Test(expected = HttpClientErrorException.class)
     public void testCreateWithLoginDublicate() {
-        testUser.setEmail("new_email@mail.ru");
+        testUser.setEmail(NON_EXISTS_EMAIL);
         restTemplate.postForObject(BASE_URL, testUser, User.class);
     }
 
     @Test(expected = HttpClientErrorException.class)
     public void testCreateWithEmailDublicate() {
-        testUser.setLogin("newTestLogin");
+        testUser.setLogin(NON_EXISTS_LOGIN);
         restTemplate.postForObject(BASE_URL, testUser, User.class);
     }
 
     @Test
     public void testUpdate() {
         testUser.setPassword(testUser.getPassword() + "12erph6");
-        testUser.setEmail("new_test_email@mail.ru");
+        testUser.setEmail(NON_EXISTS_EMAIL);
         testUser.setFirstName("updated first name");
         testUser.setLastName("updated last name");
         testUser.setBirthDay(new Date());
@@ -77,15 +86,15 @@ public class RestUserServiceTest {
 
         restTemplate.put(ID_URL, testUser, testUser.getId());
 
-        User exctractedUser = restTemplate.getForObject(ID_URL, User.class,
+        User actualUser = restTemplate.getForObject(ID_URL, User.class,
                 testUser.getId());
-        assertEquals("Users must equals", testUser, exctractedUser);
+        assertEquals("Users must equals", testUser, actualUser);
     }
 
     @Test(expected = HttpClientErrorException.class)
     public void testUpdateNonExistsId() {
         User user = getDefaultUser();
-        user.setId(-1L);
+        user.setId(NON_EXISTS_ID);
 
         restTemplate.put(ID_URL, testUser, user.getId());
     }
@@ -93,20 +102,27 @@ public class RestUserServiceTest {
     @Test(expected = HttpClientErrorException.class)
     public void testUpdateEmailDublicate() {
         User[] users = restTemplate.getForObject(BASE_URL, User[].class);
-        User user = getDefaultUser();
-        user.setId(testUser.getId());
-        user.setEmail(users[0].getEmail());
+        testUser.setEmail(users[0].getEmail());
 
-        restTemplate.put(ID_URL, user, user.getId());
+        restTemplate.put(ID_URL, testUser, testUser.getId());
     }
 
     @Test
-    public void testdelete() {
+    public void testDelete() {
         restTemplate.delete(ID_URL, testUser.getId());
         try {
             getIdByLogin(testUser.getLogin());
             fail("User must not exists");
         } catch (RuntimeException ex) {
+        }
+    }
+
+    @Test
+    public void testDeletWithNonExistsId() {
+        try {
+            restTemplate.delete(ID_URL, NON_EXISTS_ID);
+        } catch (Exception ex) {
+            fail("Wrong exception");
         }
     }
 
@@ -166,9 +182,5 @@ public class RestUserServiceTest {
         }
         throw new RuntimeException(
                 "User with login " + login + " not found in db");
-    }
-
-    private void deleteUser(User user) {
-        restTemplate.delete(ID_URL, user.getId());
     }
 }
