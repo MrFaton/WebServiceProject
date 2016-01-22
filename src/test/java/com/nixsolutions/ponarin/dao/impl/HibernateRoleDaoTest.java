@@ -14,13 +14,15 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.DatabaseSetups;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 import com.nixsolutions.ponarin.dao.RoleDao;
 import com.nixsolutions.ponarin.entity.Role;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@DatabaseSetup("/dataset/role/common.xml")
+@DatabaseSetups({ @DatabaseSetup("/dataset/user/empty.xml"),
+        @DatabaseSetup("/dataset/role/common.xml") })
 @ContextConfiguration(locations = ("classpath:/app-context-test.xml"))
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class,
@@ -66,8 +68,7 @@ public class HibernateRoleDaoTest {
 
     @Test
     @DatabaseSetup("/dataset/role/empty.xml")
-    @ExpectedDatabase(table = "Role", value = "/dataset/role/afterCreate.xml", 
-    assertionMode = DatabaseAssertionMode.NON_STRICT)
+    @ExpectedDatabase(table = "Role", value = "/dataset/role/afterCreate.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
     public void testCreate() throws Exception {
         roleDao.create(roles[1]);
     }
@@ -78,8 +79,7 @@ public class HibernateRoleDaoTest {
     }
 
     @Test
-    @ExpectedDatabase(table = "Role", value = "/dataset/role/afterUpdate.xml", 
-    assertionMode = DatabaseAssertionMode.NON_STRICT)
+    @ExpectedDatabase(table = "Role", value = "/dataset/role/afterUpdate.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
     public void testUpdate() throws Exception {
         Role role = roles[2];
         role.setName("role55");
@@ -101,8 +101,7 @@ public class HibernateRoleDaoTest {
     }
 
     @Test
-    @ExpectedDatabase(table = "Role", value = "/dataset/role/afterRemove.xml", 
-    assertionMode = DatabaseAssertionMode.NON_STRICT)
+    @ExpectedDatabase(table = "Role", value = "/dataset/role/afterRemove.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
     public void testRemove() throws Exception {
         roleDao.remove(roles[1]);
     }
